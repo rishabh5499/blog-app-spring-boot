@@ -10,6 +10,7 @@ import com.example.blog.payload.PostResponse;
 import com.example.blog.repository.CommentRepository;
 import com.example.blog.repository.PostRepository;
 import com.example.blog.service.CommentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,12 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     private PostRepository postRepository;
-    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository) {
+    private ModelMapper modelMapper;
+
+    public CommentServiceImpl(CommentRepository commentRepository, PostRepository postRepository, ModelMapper modelMapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -70,21 +74,11 @@ public class CommentServiceImpl implements CommentService {
 
 
     private CommentDto mapToDTO(Comments comments) {
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(comments.getId());
-        commentDto.setName(comments.getName());
-        commentDto.setEmail(comments.getEmail());
-        commentDto.setMessageBody(comments.getMessageBody());
-        return commentDto;
+        return modelMapper.map(comments, CommentDto.class);
     }
 
     private Comments mapToEntity(CommentDto commentDto) {
-        Comments comments = new Comments();
-        comments.setId(commentDto.getId());
-        comments.setName(commentDto.getName());
-        comments.setEmail(commentDto.getEmail());
-        comments.setMessageBody(commentDto.getMessageBody());
-        return comments;
+        return modelMapper.map(commentDto, Comments.class);
     }
 
     private Post getPost(long postId) {
