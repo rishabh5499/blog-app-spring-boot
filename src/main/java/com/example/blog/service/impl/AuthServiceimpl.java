@@ -1,5 +1,6 @@
 package com.example.blog.service.impl;
 
+import com.example.blog.Security.JwtTokenProvider;
 import com.example.blog.entity.Role;
 import com.example.blog.entity.User;
 import com.example.blog.exception.BlogAPIException;
@@ -25,15 +26,18 @@ public class AuthServiceimpl implements AuthService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider jwtTokenProvider;
 
     public AuthServiceimpl(AuthenticationManager authenticationManager,
                            UserRepository userRepository,
                            RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -43,7 +47,8 @@ public class AuthServiceimpl implements AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User logged in successfully";
+        String token = jwtTokenProvider.generateToken(authentication);
+        return token;
     }
 
     @Override
